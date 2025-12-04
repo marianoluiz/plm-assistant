@@ -1,15 +1,9 @@
-## Frontend
+# PLM Assistant
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A campus assistant chatbot powered by RAG, using the school handbook as its knowledge base, with a built-in interactive campus map and directions feature.
 
-`npm start`
+... updating readme
 
-Runs the app in the development mode.  
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-`npm test`
-`npm run build`
-`npm run eject`
 
 ## Backend
 
