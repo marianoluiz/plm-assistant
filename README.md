@@ -9,7 +9,7 @@ A campus assistant chatbot powered by RAG using the PLM Student Manual as its kn
 
 ## RAG Diagram Representation:
 
-<img src="assets/images/rag-diagram.png" alt="RAG Diagram"/>
+<img src="assets/images/rag-diagram.png" alt="RAG Diagram" width="320"/>
 
 ## Demo Screenshot
 <img src="assets/images/landing-pc.png" alt="Landing Page Desktop"/>
