@@ -1,77 +1,123 @@
 # PLM Assistant
 
-A campus assistant chatbot powered by RAG, using the school handbook as its knowledge base, with a built-in interactive campus map and directions feature.
+A campus assistant chatbot powered by RAG using the PLM Student Manual as its knowledge base, with an interactive campus map and directions.
 
-... updating readme
+- Frontend: React
+- Backend: Flask + LangChain
+- Vector Store: Chroma DB
+- Models: Google Gemini for chat and embeddings
 
+## Demo Screenshot
+<img src="assets/images/landing-pc.png" alt="Landing Page Desktop"/>
+<img src="assets/images/landing-mob.png" alt="anding Page Mobile" width="200" />
+<img src="assets/images/chat-pc.png" alt="Chat Page Desktop"/>
+<img src="assets/images/chat-mob.png" alt="Chat Page Mobile" width="200" />
 
-## Backend
+## Project Structure
+- Backend: [backend/app.py](backend/app.py), [backend/rag_service.py](backend/rag_service.py), admin tools in [backend/admin](backend/admin)
+- Frontend: [frontend/src](frontend/src), built assets in [frontend/build](frontend/build)
+- Assets: [assets/images](assets/images)
 
-### Creating venv & Installing Dependencies 
-```
+## Backend Setup
+
+### 1) Create a virtual environment
+- Linux:
+```sh
 cd backend
-
-Linux venv installation:
 python3 -m venv .venv
-source venv/bin/activate
-
-Windows venv installation:
-python -m venv venv
-venv\Scripts\activate
-
-> Minimal requirements (If leads to error try Full requirements):
-pip install -r requirements.txt
-
-> Full requirements:          
-pip install -r requirements-full.txt
-
-> Through Commands (if the requirements.txt files don't work)
-
-pip install gunicorn
-pip install Flask
-pip install flask-cors
-pip install python-dotenv
-pip install langchain                       (core)
-pip install langchain-google-genai          (embedding model & generation)
-pip install langchain-openai                (embedding model & generation)
-pip install langchain-community             (vector store)
-pip install langchain-chroma                (vector store)
+source .venv/bin/activate
 ```
 
-### Environment (.env file at backend)
-```
-LANGSMITH_TRACING=...       (optional)
-LANGSMITH_API_KEY=...       (optional)
-GOOGLE_API_KEY=...          (depreciated)
-OPENAI_API_KEY=...
-```
-
-### Making Embeddings Vector Store (Chroma DB) 
-```
-(windows)
-cd backend\admin
-python rag_indexing.py
-
-(linux)
-python3 admin/rag_indexing.py
+- Windows (PowerShell):
+```powershell
+cd backend
+python -m venv .venv
+.\.venv\Scripts\activate
 ```
 
-### Running the App (both frontend and backend) - LINUX ONLY:
->gunicorn is made for UNIX-Operating Systems, so not windows.
+### 2) Install dependencies
+
+```sh
+pip install -r backend/requirements.txt
 ```
+
+
+### 3) Environment variables
+Create `backend/.env`:
+```txt
+LANGSMITH_TRACING=...       # optional
+LANGSMITH_API_KEY=...       # optional
+GOOGLE_API_KEY=...          # required
+```
+
+### 4) Build the vector store (Chroma)
+- Bash
+```sh
+python3 backend/admin/rag_indexing.py
+```
+
+- Shell or Command Prompt:
+```powershell
+python backend/admin/rag_indexing.py
+```
+
+Paths are robust via:
+- [`backend/admin/rag_indexing.py`](backend/admin/rag_indexing.py) uses:
+  - BASE_DIR = folder of the script
+  - DATA_DIR = admin/data
+  - PERSIST_DIR = admin/data/chroma_plm_db
+
+## Running
+
+### Production-like (Linux only)
+```sh
 cd backend
 gunicorn app:app
 ```
 
-### Running for development (backend only)
-```
+### Development (backend)
+```sh
 cd backend
 flask --app app run
-flask --app app run --debug                 (hot reload)
+# or hot reload
+flask --app app run --debug
 ```
 
-### Other Commands
-- Export pip to requirements.txt (top level dependencies): 
-    - pip list --not-required
-    - pip list --not-required --format=freeze > requirements.txt
-- Remove tracked and staged files: git rm -r --cached backend/__pycache__
+### Development (frontend)
+```sh
+cd frontend
+npm install
+npm start
+```
+
+Frontend proxies API to backend via [`frontend/package.json`](frontend/package.json) "proxy": http://localhost:5000
+
+## API Endpoints
+- POST /api/chat
+  - Body: `{ "message": "text", "thread_id": "<optional>" }`
+  - Returns: `{ "response": "model reply", "thread_id": "uuid" }`
+  - Implemented in [`backend/app.py`](backend/app.py), calls [`rag_service.run_state_graph`](backend/rag_service.py)
+
+- POST /api/history
+  - Body: `{ "thread_id": "uuid" }`
+  - Returns conversation history from LangGraph checkpointer
+
+## RAG Pipeline Overview
+Defined in [`backend/rag_service.py`](backend/rag_service.py):
+- [`append_user_message`](backend/rag_service.py)
+- [`analyze_query`](backend/rag_service.py)
+- [`generate_hypothetical`](backend/rag_service.py)
+- [`retrieve`](backend/rag_service.py)
+- [`generate`](backend/rag_service.py)
+- [`append_ai_message`](backend/rag_service.py)
+
+Vector store:
+- Chroma initialized at startup in [`backend/rag_service.py`](backend/rag_service.py) with `persist_directory="./admin/data/chroma_plm_db"`
+
+## Frontend Notes
+- Chat UI: [`frontend/src/components/ChatInterface/Chat.js`](frontend/src/components/ChatInterface/Chat.js)
+- Markdown rendering: ReactMarkdown + remarkGFM
+- For compact spacing, see CSS in [`frontend/src/components/ChatInterface/Chat.css`](frontend/src/components/ChatInterface/Chat.css) and component overrides in Chat.js.
+
+## License
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
