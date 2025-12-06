@@ -7,7 +7,7 @@ A campus assistant chatbot powered by RAG using the PLM Student Manual as its kn
 - Vector Store: Chroma DB
 - Models: Google Gemini for chat and embeddings
 
-RAG Diagram Representation:
+## RAG Diagram Representation:
 
 <img src="assets/images/rag-diagram.png" alt="Chat Page Mobile"/>
 
