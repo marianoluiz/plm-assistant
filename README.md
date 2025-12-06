@@ -3,9 +3,13 @@
 A campus assistant chatbot powered by RAG using the PLM Student Manual as its knowledge base, with an interactive campus map and directions.
 
 - Frontend: React
-- Backend: Flask + LangChain
+- Backend: Flask + LangGraph
 - Vector Store: Chroma DB
 - Models: Google Gemini for chat and embeddings
+
+RAG Diagram Representation:
+
+<img src="assets/images/rag-diagram.png" alt="Chat Page Mobile"/>
 
 ## Demo Screenshot
 <img src="assets/images/landing-pc.png" alt="Landing Page Desktop"/>
@@ -17,6 +21,59 @@ A campus assistant chatbot powered by RAG using the PLM Student Manual as its kn
 - Backend: [backend/app.py](backend/app.py), [backend/rag_service.py](backend/rag_service.py), admin tools in [backend/admin](backend/admin)
 - Frontend: [frontend/src](frontend/src), built assets in [frontend/build](frontend/build)
 - Assets: [assets/images](assets/images)
+
+## RAG Process Diagram
+
+```mermaid
+flowchart LR
+    subgraph Client
+        A[User sends message]
+        Z[Reads response]
+    end
+
+    subgraph Flask [/backend/app.py/]
+        B[POST /api/chat]
+        H[POST /api/history]
+    end
+
+    subgraph LangGraph [/backend/rag_service.py/]
+        C[append_user_message]
+        D[analyze_query\n(classify section)]
+        E[generate_hypothetical\n(HyDE)]
+        F[retrieve\n(Chroma, k=8, filter by section)]
+        G[generate\n(LLM answer from retrieved docs)]
+        I[append_ai_message]
+    end
+
+    subgraph Storage [/LangGraph checkpointer/]
+        J[(Thread state & messages)]
+    end
+
+    subgraph VectorStore [/Chroma DB/]
+        K[(admin/data/chroma_plm_db)]
+    end
+
+    subgraph Models [/Google Gemini/]
+        M1[Embeddings\nmodels/gemini-embedding-001]
+        M2[Chat LLM\ngemini-2.5-flash]
+    end
+
+    A --> B
+    B --> C --> D --> E --> F --> G --> I --> Z
+
+    E -.-> M2
+    G -.-> M2
+    F -.-> K
+    K -.-> F
+
+    B --> J
+    C --> J
+    I --> J
+    H --> J
+
+    K <-- Build at startup --- M1
+```
+
 
 ## Backend Setup
 
