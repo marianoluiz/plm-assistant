@@ -3,12 +3,12 @@ load_dotenv()
 
 # Components
 from langchain.chat_models import init_chat_model
-from langchain_openai import OpenAIEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_chroma import Chroma
 from langgraph.checkpoint.memory import InMemorySaver  
 
-llm = init_chat_model("gpt-4o-mini", model_provider="openai")
-embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+llm = init_chat_model("gemini-2.5-flash", model_provider="google_genai")
+embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
 
 vector_store = Chroma(
     collection_name="plm_assistant_db",
@@ -164,7 +164,12 @@ def generate(state: State):
         """
         You are a friendly assistant specializing in Pamantasan ng Lungsod ng Maynila (PLM) rules and regulations. Answer the user's question using ONLY the provided information.
 
-        Instructions:
+        Formatting (STRICT):
+        - Use clear headings
+        - Use bullet points
+        - Use short paragraphs
+        - Use **bold** for key terms
+
         1. Read and synthesize ALL relevant context chunks.
         2. Summarize the policy clearly, using formal terms (e.g., GWA, Maximum Residency Rule, OSDS) to ensure accuracy.
         3. Integrate related policies or sections when needed.
@@ -234,7 +239,7 @@ def run_state_graph(new_user_message: str, user_thread_id: int):
         config={"configurable": {"thread_id": user_thread_id}},
     )
 
-    # print(f"User Message: {new_user_message}\n\n")
+    print(f"User Message: {new_user_message}\n\n")
     print(f"FROM ANALYZE QUERY CLASSIFICATION: {result['classification']}\n\n")
     print(f"FROM HYPOTHETICAL DOCUMENT EMBEDDING: {result['hypothetical_question']}\n\n")
     print(f"FROM RETRIEVE (CONTEXT): {result['context']}\n\n")

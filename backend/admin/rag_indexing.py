@@ -5,18 +5,22 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))   # the folder containing rag_indexing.py (backend/admin).
+DATA_DIR = os.path.join(BASE_DIR, "data")               # backend/admin/data (joins BASE_DIR with "data").
+PERSIST_DIR = os.path.join(DATA_DIR, "chroma_plm_db")   # backend/admin/data/chroma_plm_db (joins DATA_DIR with the Chroma folder).
+
 # Components
 from langchain.chat_models import init_chat_model
-from langchain_openai import OpenAIEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_chroma import Chroma
 
-llm = init_chat_model("gpt-4o-mini", model_provider="openai")
-embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+llm = init_chat_model("gemini-2.5-flash", model_provider="google_genai")
+embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
 
 vector_store = Chroma(
-    collection_name="plm_assistant_db",
-    embedding_function=embeddings,
-    persist_directory="./admin/data/chroma_plm_db",
+    collection_name = "plm_assistant_db",
+    embedding_function = embeddings,
+    persist_directory = PERSIST_DIR,
 )
 
 vector_store.reset_collection()  # optional reset before adding again
@@ -25,15 +29,15 @@ vector_store.reset_collection()  # optional reset before adding again
 from langchain_community.document_loaders import DirectoryLoader, TextLoader
 
 loader = DirectoryLoader(
-    path="./admin/data",
-    glob="[0-9]*.txt",
-    loader_cls=TextLoader,
-    loader_kwargs={"encoding": "utf-8", "autodetect_encoding": True}
+    path = DATA_DIR,
+    glob = "[0-9]*.txt",
+    loader_cls = TextLoader,
+    loader_kwargs = {"encoding": "utf-8", "autodetect_encoding": True}
 )
 
 docs = loader.load()
 
-print(f"✅ Loaded {len(docs)} document(s)")
+print(f"Successfully Loaded {len(docs)} document(s)")
 print(f"Total characters of 1st doc: {len(docs[0].page_content)}")
 
 # Split data

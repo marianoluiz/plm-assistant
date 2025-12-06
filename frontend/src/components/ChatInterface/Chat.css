@@ -585,3 +585,32 @@
   margin: 0;
   padding: 0;
 }
+
+.bot-response-text h1,
+.bot-response-text h2,
+.bot-response-text h3,
+.bot-response-text h4 {
+  margin: 0.25rem 0 0.35rem 0;
+  line-height: 1.25;
+}
+
+.bot-response-text p {
+  margin: 0.25rem 0;
+  /* reduce default ~1em */
+}
+
+.bot-response-text ul,
+.bot-response-text ol {
+  margin: 0.25rem 0;
+  padding-left: 1.1rem;
+  /* keep bullets aligned */
+}
+
+.bot-response-text li {
+  margin: 0.15rem 0;
+  /* tighter list item spacing */
+}
+
+.bot-response-text strong {
+  font-weight: 700;
+}
