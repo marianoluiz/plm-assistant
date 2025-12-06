@@ -9,9 +9,9 @@ A campus assistant chatbot powered by RAG using the PLM Student Manual as its kn
 
 ## Demo Screenshot
 <img src="assets/images/landing-pc.png" alt="Landing Page Desktop"/>
-<img src="assets/images/landing-mob.png" alt="anding Page Mobile" width="200" />
+<img src="assets/images/landing-mob.png" alt="anding Page Mobile" width="320" />
 <img src="assets/images/chat-pc.png" alt="Chat Page Desktop"/>
-<img src="assets/images/chat-mob.png" alt="Chat Page Mobile" width="200" />
+<img src="assets/images/chat-mob.png" alt="Chat Page Mobile" width="320" />
 
 ## Project Structure
 - Backend: [backend/app.py](backend/app.py), [backend/rag_service.py](backend/rag_service.py), admin tools in [backend/admin](backend/admin)
